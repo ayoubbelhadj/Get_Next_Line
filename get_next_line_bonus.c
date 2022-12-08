@@ -6,7 +6,7 @@
 /*   By: abelhadj <abelhadj@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 17:05:21 by abelhadj          #+#    #+#             */
-/*   Updated: 2022/11/18 17:07:18 by abelhadj         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:08:32 by abelhadj         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ char	*getreadline(char *str)
 		return (NULL);
 	while (str && str[i] && str[i] != '\n')
 		i++;
-	line = malloc(i + 2);
+	if (str[i] == '\n')
+		line = malloc(i + 2);
+	else
+		line = malloc(i + 1);
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -62,16 +65,19 @@ char	*getreadline(char *str)
 	}
 	if (str[i] == '\n')
 		line[i++] = '\n';
-	line [i] = '\0';
+	line[i] = '\0';
 	return (line);
 }
 
 char	*readline(int fd, char *buff)
 {
 	char	*str;
-	int		i;
+	ssize_t	i;
 
-	str = malloc(BUFFER_SIZE + 1);
+	if (BUFFER_SIZE == 2147483647)
+		str = malloc(BUFFER_SIZE);
+	else
+		str = malloc(BUFFER_SIZE + 1);
 	if (!str)
 		return (NULL);
 	i = 1;
@@ -95,7 +101,7 @@ char	*get_next_line(int fd)
 	static char	*myline[OPEN_MAX];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > 2147483647)
 		return (NULL);
 	myline[fd] = readline(fd, myline[fd]);
 	if (!myline[fd])
